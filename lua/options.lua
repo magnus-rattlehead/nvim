@@ -1,0 +1,55 @@
+local opt = vim.opt
+
+vim.g.python3_host_prog = vim.fn.expand("~/.pyenv/versions/3.11.14/bin/python3")
+
+opt.history = 500
+opt.autoread = true
+opt.confirm = true
+opt.timeoutlen = 300
+opt.scrolloff = 15
+opt.wildmenu = true
+opt.wildignore = { "*.o", "*~", "*.pyc", "*/.git/*", "*/.hg/*", "*/.svn/*", "*/.DS_Store" }
+opt.ruler = true
+opt.cmdheight = 1
+opt.hidden = true
+opt.backspace = { "eol", "start", "indent" }
+opt.whichwrap:append("<,>,h,l")
+opt.ignorecase = true
+opt.smartcase = true
+opt.hlsearch = true
+opt.incsearch = true
+opt.lazyredraw = true
+opt.magic = true
+opt.showmatch = true
+opt.matchtime = 2
+opt.errorbells = false
+opt.visualbell = false
+opt.termguicolors = true
+opt.relativenumber = true
+opt.list = true
+opt.showbreak = "↪ "
+opt.listchars = { tab = "→ ", eol = "↲", space = "␣", trail = "•", extends = "»", precedes = "«", nbsp = "‡" }
+opt.background = "dark"
+opt.encoding = "utf-8"
+opt.fileformats = { "unix", "dos", "mac" }
+opt.backup = false
+opt.writebackup = false
+opt.swapfile = false
+opt.undofile = true
+opt.expandtab = true
+opt.smarttab = true
+opt.shiftwidth = 2
+opt.tabstop = 2
+opt.softtabstop = 2
+opt.linebreak = true
+opt.textwidth = 100
+opt.autoindent = true
+opt.smartindent = true
+opt.wrap = true
+opt.laststatus = 2
+opt.updatetime = 300
+opt.signcolumn = "yes"
+opt.regexpengine = 0
+opt.showmode = false
+opt.showtabline = 2
+opt.switchbuf = { "useopen", "usetab", "newtab" }
