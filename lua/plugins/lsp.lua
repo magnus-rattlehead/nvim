@@ -17,11 +17,8 @@ local on_attach = function(_, bufnr)
   map("n", "[g", vim.diagnostic.goto_prev)
   map("n", "]g", vim.diagnostic.goto_next)
 
-  -- Refactor
-  map("n", "<leader>rn", vim.lsp.buf.rename)
-  map({ "n", "x" }, "<leader>a", vim.lsp.buf.code_action)
-  map("n", "<leader>ac", vim.lsp.buf.code_action)
-  map("n", "<leader>qf", vim.lsp.buf.code_action)
+  -- Refactor (non-leader only — leader maps defined globally below)
+  map("n", "grn", vim.lsp.buf.rename)
 
   -- Highlight symbol + refs on hold
   local grp = vim.api.nvim_create_augroup("LspDocumentHighlight" .. bufnr, { clear = true })
@@ -106,3 +103,19 @@ require("mason-lspconfig").setup({
     end,
   },
 })
+
+-- Global leader maps: defined here so which-key sees them at startup.
+-- Guard ensures they only fire when LSP is attached.
+local function lsp_or_notify(fn)
+  return function()
+    if #vim.lsp.get_clients({ bufnr = 0 }) > 0 then
+      fn()
+    else
+      vim.notify("No LSP attached", vim.log.levels.WARN)
+    end
+  end
+end
+
+vim.keymap.set({ "n", "x" }, "<leader>a",  lsp_or_notify(vim.lsp.buf.code_action), { desc = "Code action",  silent = true })
+vim.keymap.set("n",           "<leader>ac", lsp_or_notify(vim.lsp.buf.code_action), { desc = "Code action",  silent = true })
+vim.keymap.set("n",           "<leader>qf", lsp_or_notify(vim.lsp.buf.code_action), { desc = "Quick fix",    silent = true })
