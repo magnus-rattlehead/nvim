@@ -1,9 +1,10 @@
--- nvim-treesitter v1.0: parsers installed via :TSInstall / :TSUpdate
--- highlight and indent delegate to neovim's built-in vim.treesitter
-require("nvim-treesitter").setup()
-
-vim.api.nvim_create_autocmd("FileType", {
-  callback = function(args)
-    pcall(vim.treesitter.start, args.buf)
-  end,
+require("nvim-treesitter").setup({
+  auto_install = true,
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = false,
+  },
+  indent = {
+    enable = true
+  }
 })

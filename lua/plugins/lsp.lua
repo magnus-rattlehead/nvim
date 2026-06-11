@@ -1,26 +1,25 @@
+require("mason").setup()
+
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+capabilities.textDocument.foldingRange = { dynamicRegistration = false, lineFoldingOnly = true }
 
 local on_attach = function(_, bufnr)
   local map = function(mode, lhs, rhs)
     vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true })
   end
 
-  -- Navigation
-  map("n", "gd", vim.lsp.buf.definition)
-  map("n", "gy", vim.lsp.buf.type_definition)
-  map("n", "gi", vim.lsp.buf.implementation)
-  map("n", "gr", vim.lsp.buf.references)
-  map("n", "P",  vim.lsp.buf.hover)
+  map("n", "gd", require("telescope.builtin").lsp_definitions)
+  map("n", "gy", require("telescope.builtin").lsp_type_definitions)
+  map("n", "gi", require("telescope.builtin").lsp_implementations)
+  map("n", "gr", require("telescope.builtin").lsp_references)
+  map("n", "P", vim.lsp.buf.hover)
 
-  -- Diagnostics
   map("n", "[g", vim.diagnostic.goto_prev)
   map("n", "]g", vim.diagnostic.goto_next)
-
-  -- Refactor (non-leader only — leader maps defined globally below)
   map("n", "grn", vim.lsp.buf.rename)
 
-  -- Highlight symbol + refs on hold
   local grp = vim.api.nvim_create_augroup("LspDocumentHighlight" .. bufnr, { clear = true })
   vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
     buffer = bufnr,
@@ -33,7 +32,6 @@ local on_attach = function(_, bufnr)
     callback = vim.lsp.buf.clear_references,
   })
 
-  -- Organize imports (replaces coc OR command)
   vim.api.nvim_buf_create_user_command(bufnr, "OR", function()
     vim.lsp.buf.code_action({
       apply = true,
@@ -42,7 +40,6 @@ local on_attach = function(_, bufnr)
   end, {})
 end
 
--- Diagnostic display
 vim.diagnostic.config({
   signs = true,
   underline = true,
@@ -51,19 +48,21 @@ vim.diagnostic.config({
   severity_sort = true,
 })
 
-require("mason").setup()
-
 require("mason-lspconfig").setup({
   ensure_installed = {
     "pyright",
     "ts_ls",
+    "vtsls",
+    "vue_ls",
     "jsonls",
     "clangd",
     "lua_ls",
     "bashls",
+    "cssls",
+    "html",
+    "yamlls",
   },
   handlers = {
-    -- Default handler
     function(server)
       lspconfig[server].setup({
         on_attach = on_attach,
@@ -71,51 +70,61 @@ require("mason-lspconfig").setup({
       })
     end,
 
-    -- lua_ls: teach it about the neovim runtime
     lua_ls = function()
       lspconfig.lua_ls.setup({
         on_attach = on_attach,
         capabilities = capabilities,
-        settings = {
-          Lua = {
-            runtime = { version = "LuaJIT" },
-            workspace = {
-              checkThirdParty = false,
-              library = vim.api.nvim_get_runtime_file("", true),
-            },
-            diagnostics = { globals = { "vim" } },
-            telemetry = { enable = false },
-          },
-        },
       })
     end,
 
-    -- pyright: match original coc root patterns
     pyright = function()
       lspconfig.pyright.setup({
         on_attach = on_attach,
         capabilities = capabilities,
+        single_file_support = false,
         root_dir = lspconfig.util.root_pattern(
-          ".git", ".env", "venv", ".venv",
-          "setup.cfg", "setup.py", "pyproject.toml", "pyrightconfig.json"
+          "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", ".venv", "venv"
         ),
+        settings = {
+          python = {
+            analysis = {
+              exclude = { "**/node_modules", "**/dist", "**/.venv", "venv" },
+              useLibraryCodeForTypes = true,
+            }
+          }
+        }
+      })
+    end,
+
+    vue_ls = function()
+      lspconfig.vue_ls.setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+        root_dir = lspconfig.util.root_pattern("package.json", "vue.config.js", "vite.config.js"),
+      })
+    end,
+
+    vtsls = function()
+      lspconfig.vtsls.setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+        single_file_support = false,
+        root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", "jsconfig.json"),
+        settings = {
+          vtsls = {
+            autoUseWorkspaceTsdk = true,
+            experimental = {
+              completion = { enableServerSideFilter = true },
+            },
+          },
+          typescript = {
+            tserver = {
+              pluginPaths = { "./node_modules/@vue/typescript-plugin" },
+            },
+          },
+        },
+        filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact", "vue" },
       })
     end,
   },
 })
-
--- Global leader maps: defined here so which-key sees them at startup.
--- Guard ensures they only fire when LSP is attached.
-local function lsp_or_notify(fn)
-  return function()
-    if #vim.lsp.get_clients({ bufnr = 0 }) > 0 then
-      fn()
-    else
-      vim.notify("No LSP attached", vim.log.levels.WARN)
-    end
-  end
-end
-
-vim.keymap.set({ "n", "x" }, "<leader>a",  lsp_or_notify(vim.lsp.buf.code_action), { desc = "Code action",  silent = true })
-vim.keymap.set("n",           "<leader>ac", lsp_or_notify(vim.lsp.buf.code_action), { desc = "Code action",  silent = true })
-vim.keymap.set("n",           "<leader>qf", lsp_or_notify(vim.lsp.buf.code_action), { desc = "Quick fix",    silent = true })

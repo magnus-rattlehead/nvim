@@ -11,17 +11,16 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-  -- LSP: installer
+  -- LSP & Completion
   {
-    "williamboman/mason.nvim",
+    "neovim/nvim-lspconfig",
     dependencies = {
+      "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
-      "neovim/nvim-lspconfig",
     },
     config = function() require("plugins.lsp") end,
   },
 
-  -- Completion engine
   {
     "hrsh7th/nvim-cmp",
     dependencies = {
@@ -35,119 +34,153 @@ require("lazy").setup({
     config = function() require("plugins.cmp") end,
   },
 
-  -- Formatting (yapf for Python, prettier for JS/TS/JSON)
+  -- Formatting
   {
     "stevearc/conform.nvim",
+    event = { "BufWritePre" },
+    cmd = { "ConformInfo" },
     config = function() require("plugins.conform") end,
   },
 
-  -- Auto-close brackets/quotes
-  "Raimondi/delimitMate",
-
-  -- Fuzzy finder
+  -- Navigation & UI
   {
-    "Yggdroot/LeaderF",
-    build = ":LeaderfInstallCExtension",
-    config = function() require("plugins.leaderf") end,
+    "nvim-telescope/telescope.nvim",
+    branch = "master",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+    },
+    config = function() require("plugins.telescope") end,
   },
 
-  -- Symbol/LSP viewer sidebar
   {
-    "liuchengxu/vista.vim",
-    config = function() require("plugins.vista") end,
+    "stevearc/aerial.nvim",
+    cmd = "AerialToggle",
+    opts = {},
   },
 
-  -- Status line (replaces vim-airline)
   {
-    "nvim-lualine/lualine.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    config = function() require("plugins.lualine") end,
+    "echasnovski/mini.statusline",
+    version = "*",
+    config = function()
+      require("plugins.statusline")
+    end,
   },
 
-  -- Git signs in gutter (replaces vim-gitgutter)
+  -- Git Integration
   {
     "lewis6991/gitsigns.nvim",
+    event = "BufReadPost",
     config = function() require("plugins.gitsigns") end,
   },
 
-  -- Git blame
-  {
-    "APZelos/blamer.nvim",
-    config = function() require("plugins.blamer") end,
-  },
 
-  -- Highlight current paragraph
-  "junegunn/limelight.vim",
-
-  -- Color scheme (lua port of gruvbox)
+  -- Aesthetics & Editing
   {
     "ellisonleao/gruvbox.nvim",
     priority = 1000,
     config = function() require("plugins.gruvbox") end,
   },
 
-  -- Indent guides (replaces vim-indent-guides)
   {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
     config = function() require("plugins.indent-blankline") end,
   },
 
-  -- Key binding helper (replaces vim-which-key)
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
     config = function() require("plugins.which-key") end,
   },
 
-  -- Auto-detect shiftwidth/tabstop
   "tpope/vim-sleuth",
 
-  -- File icons
-  "nvim-tree/nvim-web-devicons",
-
-  -- Move lines/selections up and down
   {
     "matze/vim-move",
     config = function() require("plugins.move") end,
   },
 
-  -- Enhanced f/t navigation
-  "justinmk/vim-sneak",
-
-  -- Start screen (replaces vim-startify)
-  {
-    "goolord/alpha-nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    config = function() require("plugins.alpha") end,
-  },
-
-  -- AI assistant
   {
     "Exafunction/windsurf.vim",
     config = function() require("plugins.windsurf") end,
   },
 
-  -- File explorer (replaces NERDTree)
+  -- File Trees & History
   {
     "nvim-tree/nvim-tree.lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function() require("plugins.nvim-tree") end,
   },
 
-  -- Tag viewer (used by lualine tagbar component)
-  "preservim/tagbar",
-
-  -- Undo history visualizer
   {
     "mbbill/undotree",
+    cmd = "UndotreeToggle",
     config = function() require("plugins.undotree") end,
   },
 
-  -- Syntax/indent/language support (replaces vim-polyglot)
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     config = function() require("plugins.treesitter") end,
   },
+
+  -- Core Motions & Typing Utilities
+  {
+    "echasnovski/mini.pairs",
+    version = "*",
+    config = true,
+  },
+
+  {
+    url = "https://codeberg.org/andyg/leap.nvim",
+    name = "leap.nvim",
+    config = function() require("plugins.leap") end,
+  },
+
+  {
+    "MagicDuck/grug-far.nvim",
+    lazy = false,
+    keys = {
+      {
+        "<leader>sr",
+        function()
+          require("grug-far").open({ prefills = { search = vim.fn.expand("<cword>") } })
+        end,
+        desc = "Search & Replace (Workspace)"
+      },
+
+      {
+        "<leader>sr",
+        function()
+          require("grug-far").withMode("visual")
+        end,
+        mode = "v",
+        desc = "Search & Replace (Selection)"
+      },
+
+      {
+        "<leader>sf",
+        function()
+          local current_file = vim.fn.expand("%:.")
+          require("grug-far").open({
+            prefills = {
+              search = vim.fn.expand("<cword>"),
+              filesFilter = current_file,
+            },
+            staticTitle = "Grug-Far: Single File [" .. vim.fn.expand("%:t") .. "]"
+          })
+        end,
+        desc = "Search & Replace (Current File)"
+      },
+    },
+    config = function()
+      require("grug-far").setup({
+        windowCreationCommand = "vsplit",
+        helpLine = { enable = false },
+        icons = { enabled = true },
+      })
+    end,
+  },
+
 })

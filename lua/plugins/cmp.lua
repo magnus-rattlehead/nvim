@@ -10,13 +10,23 @@ cmp.setup({
     end,
   },
   mapping = cmp.mapping.preset.insert({
-    ["<CR>"]    = cmp.mapping.confirm({ select = true }),
+    ["<CR>"]      = cmp.mapping(function(fallback)
+      if cmp.visible() and cmp.get_active_entry() then
+        cmp.confirm({ behaviour = cmp.ConfirmBehavior.Replace, select = false })
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
     ["<C-Space>"] = cmp.mapping.complete(),
-    ["<C-f>"]   = cmp.mapping.scroll_docs(4),
-    ["<C-b>"]   = cmp.mapping.scroll_docs(-4),
-    ["<C-e>"]   = cmp.mapping.abort(),
-    ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
+    ["<C-f>"]     = cmp.mapping.scroll_docs(4),
+    ["<C-b>"]     = cmp.mapping.scroll_docs(-4),
+    ["<C-e>"]     = cmp.mapping.abort(),
+    ["<Tab>"]     = cmp.mapping(function(fallback)
+      local codeium_visible = vim.fn.exists("*codeium#GetStatusString") == 1 and
+          vim.fn["codeium#GetStatusString"]():match("0") == nil and vim.fn["codeium#GetStatusString"]() ~= ""
+      if codeium_visible then
+        fallback()
+      elseif cmp.visible() then
         cmp.select_next_item()
       elseif luasnip.expand_or_jumpable() then
         luasnip.expand_or_jump()
@@ -24,7 +34,7 @@ cmp.setup({
         fallback()
       end
     end, { "i", "s" }),
-    ["<S-Tab>"] = cmp.mapping(function(fallback)
+    ["<S-Tab>"]   = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
       elseif luasnip.jumpable(-1) then
