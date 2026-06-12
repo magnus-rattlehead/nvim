@@ -67,6 +67,14 @@ require("lazy").setup({
     end,
   },
 
+  {
+    "echasnovski/mini.tabline",
+    version = "*",
+    config = function()
+      require("plugins.tabline")
+    end,
+  },
+
   -- Git Integration
   {
     "lewis6991/gitsigns.nvim",
