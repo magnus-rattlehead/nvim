@@ -1,4 +1,3 @@
--- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({
@@ -84,12 +83,6 @@ require("lazy").setup({
 
 
   -- Aesthetics & Editing
-  {
-    "ellisonleao/gruvbox.nvim",
-    priority = 1000,
-    config = function() require("plugins.gruvbox") end,
-  },
-
   {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
