@@ -84,6 +84,13 @@ require("lazy").setup({
 
   -- Aesthetics & Editing
   {
+    "EdenEast/nightfox.nvim",
+    lazy = false,
+    priority = 1000,
+    config = function() require("plugins.nightfox") end,
+  },
+
+  {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
     config = function() require("plugins.indent-blankline") end,
