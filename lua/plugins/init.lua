@@ -59,8 +59,17 @@ require("lazy").setup({
   },
 
   {
+    "nvim-mini/mini.icons",
+    version = false,
+    config = function()
+      require("plugins.icons")
+    end,
+  },
+
+  {
     "echasnovski/mini.statusline",
     version = "*",
+    dependencies = { "nvim-mini/mini.icons" },
     config = function()
       require("plugins.statusline")
     end,
@@ -84,10 +93,10 @@ require("lazy").setup({
 
   -- Aesthetics & Editing
   {
-    "EdenEast/nightfox.nvim",
+    "scottmckendry/cyberdream.nvim",
     lazy = false,
     priority = 1000,
-    config = function() require("plugins.nightfox") end,
+    config = function() require("plugins.cyberdream") end,
   },
 
   {
@@ -117,7 +126,7 @@ require("lazy").setup({
   -- File Trees & History
   {
     "nvim-tree/nvim-tree.lua",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    dependencies = { "nvim-mini/mini.icons" },
     config = function() require("plugins.nvim-tree") end,
   },
 
