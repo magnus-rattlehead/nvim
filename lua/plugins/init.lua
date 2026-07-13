@@ -83,6 +83,18 @@ require("lazy").setup({
     end,
   },
 
+  {
+    "rmagatti/auto-session",
+    lazy = false,
+    config = function() require("plugins.auto-session") end,
+    keys = {
+      { "<leader>qs", "<cmd>AutoSession save<cr>", desc = "Save session" },
+      { "<leader>qr", "<cmd>AutoSession restore<cr>", desc = "Restore session" },
+      { "<leader>qS", "<cmd>AutoSession search<cr>", desc = "Search sessions" },
+      { "<leader>qa", "<cmd>AutoSession toggle<cr>", desc = "Toggle autosave" },
+    },
+  },
+
   -- Git Integration
   {
     "lewis6991/gitsigns.nvim",
