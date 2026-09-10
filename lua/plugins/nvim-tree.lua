@@ -1,3 +1,16 @@
-require("nvim-tree").setup()
+local godot = require("godot")
 
-vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<cr>")
+require("nvim-tree").setup({
+  filters = {
+    custom = function(path)
+      if not godot.is_project() then
+        return false
+      end
+
+      local name = vim.fs.basename(path)
+      return name == "server.pipe" or vim.endswith(name, ".uid")
+    end,
+  },
+})
+
+require("keymaps").nvim_tree()

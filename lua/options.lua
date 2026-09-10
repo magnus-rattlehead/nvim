@@ -11,6 +11,8 @@ opt.clipboard = "unnamedplus"
 
 opt.termguicolors = true
 opt.background = "dark"
+opt.winblend = 0
+opt.pumblend = 0
 opt.relativenumber = true
 opt.ruler = true
 opt.cmdheight = 1

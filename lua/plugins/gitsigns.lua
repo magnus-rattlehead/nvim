@@ -25,10 +25,4 @@ require("gitsigns").setup({
   max_file_length              = 40000,
 })
 
-vim.keymap.set("n", "<leader>tb", function()
-  require("gitsigns").toggle_current_line_blame()
-end, { desc = "Toggle Git Blame Inline" })
-
-vim.keymap.set("n", "<leader>hp", function()
-  require("gitsigns").preview_hunk()
-end, { desc = "Preview Git Hunk" })
+require("keymaps").gitsigns()

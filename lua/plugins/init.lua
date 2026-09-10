@@ -33,6 +33,17 @@ require("lazy").setup({
     config = function() require("plugins.cmp") end,
   },
 
+  -- Jupyter notebooks
+  {
+    "sheng-tse/jupynvim",
+    lazy = false, -- Register notebook read handlers before opening .ipynb files.
+    build = function(plugin)
+      local install = loadfile(plugin.dir .. "/lua/jupynvim/install.lua")()
+      install.run(plugin)
+    end,
+    config = function() require("plugins.jupynvim") end,
+  },
+
   -- Formatting
   {
     "stevearc/conform.nvim",
@@ -87,12 +98,7 @@ require("lazy").setup({
     "rmagatti/auto-session",
     lazy = false,
     config = function() require("plugins.auto-session") end,
-    keys = {
-      { "<leader>qs", "<cmd>AutoSession save<cr>", desc = "Save session" },
-      { "<leader>qr", "<cmd>AutoSession restore<cr>", desc = "Restore session" },
-      { "<leader>qS", "<cmd>AutoSession search<cr>", desc = "Search sessions" },
-      { "<leader>qa", "<cmd>AutoSession toggle<cr>", desc = "Toggle autosave" },
-    },
+    keys = require("keymaps").auto_session,
   },
 
   -- Git Integration
@@ -131,8 +137,29 @@ require("lazy").setup({
   },
 
   {
-    "Exafunction/windsurf.vim",
-    config = function() require("plugins.windsurf") end,
+    "wellatleastitried/bitwise-visualizer.nvim",
+    main = "bitwise-visualizer",
+    event = "VeryLazy",
+    opts = {
+      width = "auto",
+    },
+    keys = require("keymaps").bitwise,
+  },
+
+  {
+    "milanglacier/minuet-ai.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      {
+        "Davidyz/VectorCode",
+        version = "0.7.20", -- Match the installed CLI.
+        init = function()
+          vim.env.PATH = vim.fn.expand("~/.local/bin") .. ":" .. vim.env.PATH
+        end,
+        config = function() require("plugins.vectorcode") end,
+      },
+    },
+    config = function() require("plugins.minuet") end,
   },
 
   -- File Trees & History
@@ -145,7 +172,7 @@ require("lazy").setup({
   {
     "mbbill/undotree",
     cmd = "UndotreeToggle",
-    config = function() require("plugins.undotree") end,
+    keys = require("keymaps").undotree,
   },
 
   {
@@ -170,39 +197,7 @@ require("lazy").setup({
   {
     "MagicDuck/grug-far.nvim",
     lazy = false,
-    keys = {
-      {
-        "<leader>sr",
-        function()
-          require("grug-far").open({ prefills = { search = vim.fn.expand("<cword>") } })
-        end,
-        desc = "Search & Replace (Workspace)"
-      },
-
-      {
-        "<leader>sr",
-        function()
-          require("grug-far").withMode("visual")
-        end,
-        mode = "v",
-        desc = "Search & Replace (Selection)"
-      },
-
-      {
-        "<leader>sf",
-        function()
-          local current_file = vim.fn.expand("%:.")
-          require("grug-far").open({
-            prefills = {
-              search = vim.fn.expand("<cword>"),
-              filesFilter = current_file,
-            },
-            staticTitle = "Grug-Far: Single File [" .. vim.fn.expand("%:t") .. "]"
-          })
-        end,
-        desc = "Search & Replace (Current File)"
-      },
-    },
+    keys = require("keymaps").grug_far,
     config = function()
       require("grug-far").setup({
         windowCreationCommand = "vsplit",

@@ -58,7 +58,9 @@ local function schedule_hover(bufnr)
         return
       end
 
-      vim.lsp.buf.hover()
+      if #vim.lsp.get_clients({ bufnr = bufnr, method = "textDocument/hover" }) > 0 then
+        vim.lsp.buf.hover()
+      end
     end)
   end)
 end
@@ -70,26 +72,17 @@ vim.lsp.config("*", {
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
     local bufnr = args.buf
-    local map = function(mode, lhs, rhs, desc)
-      vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, desc = desc })
-    end
-
-    map("n", "gd", vim.lsp.buf.definition, "Go to definition")
-    map("n", "gy", require("telescope.builtin").lsp_type_definitions, "Go to type definition")
-    map("n", "gi", require("telescope.builtin").lsp_implementations, "Go to implementation")
-    map("n", "gr", require("telescope.builtin").lsp_references, "Go to references")
-    map("n", "K", vim.lsp.buf.hover, "Hover")
-    map("n", "P", vim.lsp.buf.hover, "Hover")
-
-    map("n", "[g", vim.diagnostic.goto_prev, "Previous diagnostic")
-    map("n", "]g", vim.diagnostic.goto_next, "Next diagnostic")
-    map("n", "grn", vim.lsp.buf.rename, "Rename")
+    require("keymaps").lsp(bufnr)
 
     local grp = vim.api.nvim_create_augroup("LspDocumentHighlight" .. bufnr, { clear = true })
     vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
       buffer = bufnr,
       group = grp,
-      callback = vim.lsp.buf.document_highlight,
+      callback = function()
+        if #vim.lsp.get_clients({ bufnr = bufnr, method = "textDocument/documentHighlight" }) > 0 then
+          vim.lsp.buf.document_highlight()
+        end
+      end,
     })
     vim.api.nvim_create_autocmd("CursorMoved", {
       buffer = bufnr,
@@ -154,6 +147,8 @@ vim.lsp.config("pyright", {
     "requirements.txt",
     ".venv",
     "venv",
+    ".git",
+    ".vectorcode",
   },
   settings = {
     python = {
@@ -187,6 +182,9 @@ vim.lsp.config("vtsls", {
   },
   filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact", "vue" },
 })
+
+-- Godot provides this language server while the editor and project are open.
+vim.lsp.enable("gdscript")
 
 require("mason-lspconfig").setup({
   ensure_installed = {
