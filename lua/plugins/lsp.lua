@@ -141,6 +141,7 @@ vim.lsp.config("clangd", {
 vim.lsp.config("pyright", {
   workspace_required = true,
   root_markers = {
+    "uv.lock",
     "pyproject.toml",
     "setup.py",
     "setup.cfg",
