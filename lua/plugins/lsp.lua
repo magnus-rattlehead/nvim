@@ -138,9 +138,11 @@ vim.lsp.config("clangd", {
   },
 })
 
-vim.lsp.config("pyright", {
+vim.lsp.config("basedpyright", {
   workspace_required = true,
+  -- Prefer the service's import configuration over nested dependency manifests.
   root_markers = {
+    "pyrightconfig.json",
     "uv.lock",
     "pyproject.toml",
     "setup.py",
@@ -151,15 +153,24 @@ vim.lsp.config("pyright", {
     ".git",
     ".vectorcode",
   },
+  -- Recursive client watchers exhaust macOS file descriptors in firespotter.
+  -- Buffer edits still sync; restart the LSP after external file-tree changes.
+  capabilities = {
+    workspace = {
+      didChangeWatchedFiles = { dynamicRegistration = false },
+    },
+  },
   settings = {
-    python = {
+    basedpyright = {
       analysis = {
+        diagnosticMode = "openFilesOnly",
         exclude = { "**/node_modules", "**/dist", "**/.venv", "venv" },
-        useLibraryCodeForTypes = true,
       },
     },
   },
 })
+-- basedpyright-langserver is installed with uv and available on PATH.
+vim.lsp.enable("basedpyright")
 
 vim.lsp.config("vue_ls", {
   root_markers = { "package.json", "vue.config.js", "vite.config.js" },
@@ -188,8 +199,8 @@ vim.lsp.config("vtsls", {
 vim.lsp.enable("gdscript")
 
 require("mason-lspconfig").setup({
+  automatic_enable = { exclude = { "pyright" } },
   ensure_installed = {
-    "pyright",
     "ts_ls",
     "vtsls",
     "vue_ls",
