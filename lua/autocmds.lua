@@ -1,5 +1,12 @@
 local autocmd = vim.api.nvim_create_autocmd
 
+autocmd("FileType", {
+  pattern = "zig",
+  callback = function()
+    require("formatters.mint_install").ensure_installed()
+  end,
+})
+
 -- matchit (built-in in neovim but loaded explicitly for compatibility)
 vim.cmd("runtime macros/matchit.vim")
 

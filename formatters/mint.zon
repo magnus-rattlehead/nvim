@@ -1,0 +1,5 @@
+.{
+    .width = 100,
+    .indent = 4,
+    .ignore = .{},
+}

@@ -8,6 +8,10 @@ local function lsp_format(bufnr)
   if ft == "markdown" or ft == "markdown.mdx" or ft == "text" then
     return "never"
   end
+  if ft == "zig" then
+    -- ZLS formatting would undo Mint's wrapping.
+    return "never"
+  end
   return "prefer"
 end
 
@@ -24,7 +28,7 @@ require("conform").setup({
     sh         = { "shfmt" },
     bash       = { "shfmt" },
     gdscript   = { "gdformat" },
-    zig        = { "zigfmt" },
+    zig        = { "mint" },
     python     = { "yapf" },
     javascript = { "prettier" },
     javascriptreact = { "prettier" },
@@ -44,6 +48,7 @@ require("conform").setup({
     text       = { "text_wrap" },
   },
   formatters = {
+    mint = require("formatters.mint"),
     prettier = {
       prepend_args = function(_, ctx)
         local args = { "--print-width", tostring(line_width(ctx.buf)), "--config-precedence", "prefer-file" }
