@@ -39,6 +39,15 @@ require("lazy").setup({
 		end,
 	},
 
+	-- LaTeX: upstream lazy.nvim example, https://github.com/lervag/vimtex#installation
+	{
+		"lervag/vimtex",
+		lazy = false, -- VimTeX handles filetype loading itself.
+		init = function()
+			vim.g.vimtex_view_method = "zathura"
+		end,
+	},
+
 	-- Jupyter notebooks
 	{
 		"sheng-tse/jupynvim",

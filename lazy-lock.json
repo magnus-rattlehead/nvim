@@ -32,5 +32,6 @@
   "undotree": { "branch": "master", "commit": "6fa6b57cda8459e1e4b2ca34df702f55242f4e4d" },
   "vim-move": { "branch": "master", "commit": "267fd1cff61fc643dfb5f9b188c434906f5214aa" },
   "vim-sleuth": { "branch": "master", "commit": "be69bff86754b1aa5adcbb527d7fcd1635a84080" },
+  "vimtex": { "branch": "master", "commit": "9745f3b467f5c24d0d5133e82537a74434da8ae3" },
   "which-key.nvim": { "branch": "main", "commit": "3aab2147e74890957785941f0c1ad87d0a44c15a" }
 }
