@@ -202,6 +202,14 @@ vim.lsp.enable("gdscript")
 
 require("mason-lspconfig").setup({
 	automatic_enable = { exclude = { "pyright" } },
+})
+
+-- mason-lspconfig enables servers; mason-tool-installer installs and updates them.
+require("mason-tool-installer").setup({
+	auto_update = true,
+	run_on_start = true,
+	start_delay = 3000,
+	debounce_hours = 24,
 	ensure_installed = {
 		"ts_ls",
 		"vtsls",
@@ -213,6 +221,6 @@ require("mason-lspconfig").setup({
 		"cssls",
 		"html",
 		"yamlls",
-		"zls@0.16.0", -- Match the installed Zig release.
+		"zls",
 	},
 })
